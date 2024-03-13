@@ -111,6 +111,16 @@ export default function ReactSearchAutocomplete<T>({
   }, [isTyping, showNoResults, isSearchComplete, searchString, results])
 
   useEffect(() => {
+    const autoCompletes = document.querySelectorAll('.autocomplete-search');
+    if (autoCompletes.length) {
+      const first = autoCompletes[0]?.querySelector('.wrapper') as HTMLElement;
+      const second = autoCompletes[1]?.querySelector('.wrapper') as HTMLElement;
+      first.style.setProperty('z-index', '2', 'important');
+      second.style.setProperty('z-index', '1', 'important');
+    }
+  }, []);
+
+  useEffect(() => {
     if (showItemsOnFocus && results.length === 0 && searchString.length === 0 && hasFocus) {
       setResults(items.slice(0, maxResults))
     }

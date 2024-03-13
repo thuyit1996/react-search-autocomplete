@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { default as Fuse } from 'fuse.js'
 import React, {
   ChangeEvent,
@@ -8,10 +9,10 @@ import React, {
   useState
 } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
-import { DefaultTheme, defaultFuseOptions, defaultTheme } from '../config/config'
-import { debounce } from '../utils/utils'
+import { DefaultTheme, defaultFuseOptions, defaultTheme } from './config'
 import Results, { Item } from './Results'
 import SearchInput from './SearchInput'
+import { debounce } from 'lodash'
 
 export const DEFAULT_INPUT_DEBOUNCE = 200
 export const MAX_RESULTS = 10
@@ -39,17 +40,18 @@ export interface ReactSearchAutocompleteProps<T> {
   showItemsOnFocus?: boolean
   maxLength?: number
   className?: string
+  defaultOptions?: T[],
 }
 
 export default function ReactSearchAutocomplete<T>({
   items = [],
   fuseOptions = defaultFuseOptions,
   inputDebounce = DEFAULT_INPUT_DEBOUNCE,
-  onSearch = () => {},
-  onHover = () => {},
-  onSelect = () => {},
-  onFocus = () => {},
-  onClear = () => {},
+  onSearch = () => { },
+  onHover = () => { },
+  onSelect = () => { },
+  onFocus = () => { },
+  onClear = () => { },
   showIcon = true,
   showClear = true,
   maxResults = MAX_RESULTS,
@@ -63,13 +65,14 @@ export default function ReactSearchAutocomplete<T>({
   showNoResultsText = 'No results',
   showItemsOnFocus = false,
   maxLength = 0,
-  className
+  className,
+  defaultOptions = []
 }: ReactSearchAutocompleteProps<T>) {
   const theme = { ...defaultTheme, ...styling }
   const options = { ...defaultFuseOptions, ...fuseOptions }
 
   const fuse = new Fuse(items, options)
-  fuse.setCollection(items)
+  fuse.setCollection(items);
 
   const [searchString, setSearchString] = useState<string>(inputSearchString)
   const [results, setResults] = useState<any[]>([])
@@ -153,11 +156,14 @@ export default function ReactSearchAutocomplete<T>({
     setHighlightedItem(0)
   }
 
-  const fuseResults = (keyword: string) =>
-    fuse
-      .search(keyword, { limit: maxResults })
-      .map((result) => ({ ...result.item }))
-      .slice(0, maxResults)
+  const fuseResults = (keyword: string) => {
+    const filterResult = fuse
+      .search(keyword)
+      .map((result) => ({ ...result.item }));
+    return defaultOptions.concat(filterResult);
+  }
+
+  // .slice(0, maxResults)
 
   const handleSetSearchString = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const keyword = target.value

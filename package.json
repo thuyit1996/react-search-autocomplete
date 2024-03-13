@@ -1,8 +1,8 @@
 {
-  "name": "react-search-autocomplete",
+  "name": "bbd-react-autocomplete",
   "author": "Reale Roberto Josef Antonio",
   "license": "MIT",
-  "version": "8.5.2",
+  "version": "0.0.3",
   "description": "A search box for React",
   "main": "dist/index.js",
   "scripts": {

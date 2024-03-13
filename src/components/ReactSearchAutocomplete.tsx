@@ -37,7 +37,6 @@ export interface ReactSearchAutocompleteProps<T> {
   formatResult?: Function
   showNoResults?: boolean
   showNoResultsText?: string
-  showItemsOnFocus?: boolean
   maxLength?: number
   className?: string
   defaultOptions?: T[],
@@ -63,7 +62,6 @@ export default function ReactSearchAutocomplete<T>({
   formatResult,
   showNoResults = true,
   showNoResultsText = 'No results',
-  showItemsOnFocus = false,
   maxLength = 0,
   className,
   defaultOptions = []
@@ -80,7 +78,6 @@ export default function ReactSearchAutocomplete<T>({
   const [isSearchComplete, setIsSearchComplete] = useState<boolean>(false)
   const [isTyping, setIsTyping] = useState<boolean>(false)
   const [showNoResultsFlag, setShowNoResultsFlag] = useState<boolean>(false)
-  const [hasFocus, setHasFocus] = useState<boolean>(false)
 
   useEffect(() => {
     setSearchString(inputSearchString)
@@ -110,36 +107,8 @@ export default function ReactSearchAutocomplete<T>({
     }
   }, [isTyping, showNoResults, isSearchComplete, searchString, results])
 
-  useEffect(() => {
-    const autoCompletes = document.querySelectorAll('.autocomplete-search');
-    if (autoCompletes.length) {
-      const first = autoCompletes[0]?.querySelector('.wrapper') as HTMLElement;
-      const second = autoCompletes[1]?.querySelector('.wrapper') as HTMLElement;
-      first.style.setProperty('z-index', '2', 'important');
-      second.style.setProperty('z-index', '1', 'important');
-    }
-  }, []);
-
-  useEffect(() => {
-    if (showItemsOnFocus && results.length === 0 && searchString.length === 0 && hasFocus) {
-      setResults(items.slice(0, maxResults))
-    }
-  }, [showItemsOnFocus, results, searchString, hasFocus])
-
-  useEffect(() => {
-    const handleDocumentClick = () => {
-      eraseResults()
-      setHasFocus(false)
-    }
-
-    document.addEventListener('click', handleDocumentClick)
-
-    return () => document.removeEventListener('click', handleDocumentClick)
-  }, [])
-
   const handleOnFocus = (event: FocusEvent<HTMLInputElement>) => {
-    onFocus(event)
-    setHasFocus(true)
+    setResults([...defaultOptions,...items.slice(0, maxResults)])
   }
 
   const callOnSearch = (keyword: string) => {
@@ -172,8 +141,6 @@ export default function ReactSearchAutocomplete<T>({
       .map((result) => ({ ...result.item }));
     return defaultOptions.concat(filterResult);
   }
-
-  // .slice(0, maxResults)
 
   const handleSetSearchString = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const keyword = target.value

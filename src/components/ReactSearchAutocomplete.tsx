@@ -9,10 +9,10 @@ import React, {
   useState
 } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
-import { DefaultTheme, defaultFuseOptions, defaultTheme } from './config'
 import Results, { Item } from './Results'
 import SearchInput from './SearchInput'
 import { debounce } from 'lodash'
+import { defaultFuseOptions, defaultTheme, DefaultTheme } from '../config/config'
 
 export const DEFAULT_INPUT_DEBOUNCE = 200
 export const MAX_RESULTS = 10

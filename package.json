@@ -2,7 +2,7 @@
   "name": "bbd-react-autocomplete",
   "author": "Reale Roberto Josef Antonio",
   "license": "MIT",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A search box for React",
   "main": "dist/index.js",
   "scripts": {
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sickdyd/react-search-autocomplete.git"
+    "url": "git+https://github.com/thuyit1996/react-search-autocomplete"
   },
   "keywords": [
     "search",
@@ -47,9 +47,9 @@
     ]
   },
   "bugs": {
-    "url": "https://github.com/sickdyd/react-search-autocomplete/issues"
+    "url": "https://github.com/thuyit1996/react-search-autocomplete/issues"
   },
-  "homepage": "https://github.com/sickdyd/react-search-autocomplete#readme",
+  "homepage": "https://github.com/thuyit1996/react-search-autocomplete#readme",
   "dependencies": {
     "fuse.js": "^6.5.3",
     "styled-components": "^5.3.3"

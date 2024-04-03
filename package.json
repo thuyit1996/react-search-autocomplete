@@ -1,8 +1,8 @@
 {
   "name": "bbd-react-autocomplete",
-  "author": "Reale Roberto Josef Antonio",
+  "author": "thuyvu",
   "license": "MIT",
-  "version": "0.1.3",
+  "version": "0.1.6",
   "description": "A search box for React",
   "main": "dist/index.js",
   "scripts": {

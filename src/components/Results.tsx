@@ -95,7 +95,7 @@ const ResultsWrapper = ({ children }: { children: ReactNode }) => {
   return (
     <StyledResults>
       <div className="line" />
-      <ul>{children}</ul>
+      <ul className="result-list">{children}</ul>
     </StyledResults>
   )
 }

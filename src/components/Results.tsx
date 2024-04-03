@@ -1,21 +1,22 @@
-import { MouseEvent, ReactNode } from 'react'
-import styled from 'styled-components'
-import { SearchIcon } from './SearchIcon'
+import type { MouseEvent, ReactNode } from 'react';
+import styled from 'styled-components';
 
-export type Item<T> = T & { [key: string]: any }
+import { SearchIcon } from './SearchIcon';
+
+export type Item<T> = T & { [key: string]: any };
 
 export interface ResultsProps<T> {
-  results: Item<T>[]
-  onClick: Function
-  highlightedItem: number
-  setHighlightedItem: Function
-  setSearchString: Function
-  formatResult?: Function
-  showIcon: boolean
-  maxResults: number
-  resultStringKeyName: string
-  showNoResultsFlag?: boolean
-  showNoResultsText?: string
+  results: Item<T>[];
+  onClick: Function;
+  highlightedItem: number;
+  setHighlightedItem: Function;
+  setSearchString: Function;
+  formatResult?: Function;
+  showIcon: boolean;
+  maxResults: number;
+  resultStringKeyName: string;
+  showNoResultsFlag?: boolean;
+  showNoResultsText?: string;
 }
 
 export default function Results<T>({
@@ -29,31 +30,29 @@ export default function Results<T>({
   setHighlightedItem,
   formatResult,
   showNoResultsFlag = true,
-  showNoResultsText = 'No results'
+  showNoResultsText = 'No results',
 }: ResultsProps<T>) {
-  type WithStringKeyName = T & Record<string, unknown>
+  type WithStringKeyName = T & Record<string, unknown>;
 
-  const formatResultWithKey = formatResult
-    ? formatResult
-    : (item: WithStringKeyName) => item[resultStringKeyName]
+  const formatResultWithKey =
+    formatResult || ((item: WithStringKeyName) => item[resultStringKeyName]);
 
   const handleClick = (result: WithStringKeyName) => {
-    onClick(result)
-    setSearchString(result[resultStringKeyName])
-  }
-
+    onClick(result);
+    setSearchString(result[resultStringKeyName]);
+  };
   const handleMouseDown = ({
     event,
-    result
+    result,
   }: {
-    event: MouseEvent<HTMLLIElement>
-    result: WithStringKeyName
+    event: MouseEvent<HTMLLIElement>;
+    result: WithStringKeyName;
   }) => {
     if (event.button === 0) {
-      event.preventDefault()
-      handleClick(result)
+      event.preventDefault();
+      handleClick(result);
     }
-  }
+  };
 
   if (showNoResultsFlag) {
     return (
@@ -63,11 +62,11 @@ export default function Results<T>({
           <div className="ellipsis">{showNoResultsText}</div>
         </li>
       </ResultsWrapper>
-    )
+    );
   }
 
   if (results?.length <= 0 && !showNoResultsFlag) {
-    return null
+    return null;
   }
 
   return (
@@ -82,13 +81,16 @@ export default function Results<T>({
           onClick={() => handleClick(result)}
         >
           <SearchIcon showIcon={showIcon} />
-          <div className="ellipsis" title={result[resultStringKeyName] as string}>
+          <div
+            className="ellipsis"
+            title={result[resultStringKeyName] as string}
+          >
             {formatResultWithKey(result)}
           </div>
         </li>
       ))}
     </ResultsWrapper>
-  )
+  );
 }
 
 const ResultsWrapper = ({ children }: { children: ReactNode }) => {
@@ -97,8 +99,8 @@ const ResultsWrapper = ({ children }: { children: ReactNode }) => {
       <div className="line" />
       <ul className="result-list">{children}</ul>
     </StyledResults>
-  )
-}
+  );
+};
 
 const StyledResults = styled.div`
   > div.line {
@@ -142,4 +144,4 @@ const StyledResults = styled.div`
   .selected {
     background-color: ${(props: any) => props.theme.hoverBackgroundColor};
   }
-`
+`;

@@ -1,56 +1,53 @@
-//@ts-nocheck
-import { default as Fuse } from 'fuse.js'
-import React, {
-  ChangeEvent,
-  FocusEvent,
-  FocusEventHandler,
-  KeyboardEvent,
-  useEffect,
-  useState
-} from 'react'
-import styled, { ThemeProvider } from 'styled-components'
-import Results, { Item } from './Results'
-import SearchInput from './SearchInput'
-import { debounce } from 'lodash'
-import { defaultFuseOptions, defaultTheme, DefaultTheme } from '../config/config'
+// @ts-nocheck
+import type { default as Fuse } from 'fuse.js';
+import { debounce } from 'lodash';
+import type { ChangeEvent, FocusEventHandler, KeyboardEvent } from 'react';
+import React, { useEffect, useState } from 'react';
+import styled, { ThemeProvider } from 'styled-components';
 
-export const DEFAULT_INPUT_DEBOUNCE = 200
-export const MAX_RESULTS = 10
+import type { DefaultTheme } from '../config/config';
+import { defaultFuseOptions, defaultTheme } from '../config/config';
+import type { Item } from './Results';
+import Results from './Results';
+import SearchInput from './SearchInput';
+
+export const DEFAULT_INPUT_DEBOUNCE = 200;
+export const MAX_RESULTS = 10;
 
 export interface ReactSearchAutocompleteProps<T> {
-  items: T[]
-  fuseOptions?: Fuse.IFuseOptions<T>
-  inputDebounce?: number
-  onSearch?: (keyword: string, results: T[]) => void
-  onHover?: (result: T) => void
-  onSelect?: (result: T) => void
-  onFocus?: FocusEventHandler<HTMLInputElement>
-  onClear?: Function
-  showIcon?: boolean
-  showClear?: boolean
-  maxResults?: number
-  placeholder?: string
-  autoFocus?: boolean
-  styling?: DefaultTheme
-  resultStringKeyName?: string
-  inputSearchString?: string
-  formatResult?: Function
-  showNoResults?: boolean
-  showNoResultsText?: string
-  maxLength?: number
-  className?: string
-  defaultOptions?: T[],
+  items: T[];
+  fuseOptions?: Fuse.IFuseOptions<T>;
+  inputDebounce?: number;
+  onSearch?: (keyword: string, results: T[]) => void;
+  onHover?: (result: T) => void;
+  onSelect?: (result: T) => void;
+  onFocus?: FocusEventHandler<HTMLInputElement>;
+  onClear?: Function;
+  showIcon?: boolean;
+  showClear?: boolean;
+  maxResults?: number;
+  placeholder?: string;
+  autoFocus?: boolean;
+  styling?: DefaultTheme;
+  resultStringKeyName?: string;
+  inputSearchString?: string;
+  formatResult?: Function;
+  showNoResults?: boolean;
+  showNoResultsText?: string;
+  maxLength?: number;
+  className?: string;
+  defaultOptions?: T[];
 }
 
 export default function ReactSearchAutocomplete<T>({
   items = [],
   fuseOptions = defaultFuseOptions,
   inputDebounce = DEFAULT_INPUT_DEBOUNCE,
-  onSearch = () => { },
-  onHover = () => { },
-  onSelect = () => { },
-  onFocus = () => { },
-  onClear = () => { },
+  onSearch = () => {},
+  onHover = () => {},
+  onSelect = () => {},
+  onFocus = () => {},
+  onClear = () => {},
   showIcon = true,
   showClear = true,
   maxResults = MAX_RESULTS,
@@ -66,32 +63,42 @@ export default function ReactSearchAutocomplete<T>({
   className,
   defaultOptions = [],
 }: ReactSearchAutocompleteProps<T>) {
-  const theme = { ...defaultTheme, ...styling }
-  const options = { ...defaultFuseOptions, ...fuseOptions }
+  const theme = { ...defaultTheme, ...styling };
+  // const options = { ...defaultFuseOptions, ...fuseOptions };
 
-  const fuse = new Fuse(items, options)
-  fuse.setCollection(items);
+  // const fuse = new Fuse(items, options);
+  // fuse.setCollection(items);
 
-  const [searchString, setSearchString] = useState<string>(inputSearchString)
-  const [results, setResults] = useState<any[]>([])
-  const [highlightedItem, setHighlightedItem] = useState<number>(-1)
-  const [isSearchComplete, setIsSearchComplete] = useState<boolean>(false)
-  const [isTyping, setIsTyping] = useState<boolean>(false)
-  const [showNoResultsFlag, setShowNoResultsFlag] = useState<boolean>(false)
+  const [searchString, setSearchString] = useState<string>(inputSearchString);
+  const [results, setResults] = useState<any[]>([]);
+  const [highlightedItem, setHighlightedItem] = useState<number>(-1);
+  const [isSearchComplete, setIsSearchComplete] = useState<boolean>(false);
+  const [isTyping, setIsTyping] = useState<boolean>(false);
+  const [showNoResultsFlag, setShowNoResultsFlag] = useState<boolean>(false);
 
-  useEffect(() => {
-    setSearchString(inputSearchString)
-    const timeoutId = setTimeout(() => setResults(fuseResults(inputSearchString)), 0)
+  // useEffect(() => {
 
-    return () => clearTimeout(timeoutId)
-  }, [inputSearchString])
+  // }, [items]);
 
   useEffect(() => {
-    searchString?.length > 0 &&
-      results &&
-      results?.length > 0 &&
-      setResults(fuseResults(searchString))
-  }, [items])
+    setSearchString(inputSearchString);
+    const timeoutId = setTimeout(
+      () => setResults(fuseResults(inputSearchString)),
+      0,
+    );
+
+    return () => clearTimeout(timeoutId);
+  }, [inputSearchString]);
+
+  useEffect(() => {
+    // const newFuse = new Fuse(items, options);
+    // newFuse.setCollection(items);
+    // setFuse(newFuse);
+    // searchString?.length > 0 &&
+    //   results &&
+    //   results?.length > 0 &&
+    setResults(fuseResults(searchString));
+  }, [items]);
 
   useEffect(() => {
     if (
@@ -101,110 +108,116 @@ export default function ReactSearchAutocomplete<T>({
       results.length === 0 &&
       !isSearchComplete
     ) {
-      setShowNoResultsFlag(true)
+      setShowNoResultsFlag(true);
     } else {
-      setShowNoResultsFlag(false)
+      setShowNoResultsFlag(false);
     }
-  }, [isTyping, showNoResults, isSearchComplete, searchString, results])
+  }, [isTyping, showNoResults, isSearchComplete, searchString, results]);
 
   const handleOnFocus = (event: FocusEvent<HTMLInputElement>) => {
-    setResults([...(searchString ? [] : defaultOptions), ...items.slice(0, maxResults)])
-  }
+    setResults([
+      ...(searchString ? [] : defaultOptions),
+      ...items.slice(0, maxResults),
+    ]);
+  };
 
   const callOnSearch = (keyword: string) => {
-    let newResults: T[] = []
+    // let newResults: T[] = [];
 
-    keyword?.length > 0 && (newResults = fuseResults(keyword))
-
-    setResults(newResults)
-    onSearch(keyword, newResults)
-    setIsTyping(false)
-  }
+    // keyword?.length > 0 && (newResults = fuseResults(keyword));
+    // setResults(newResults);
+    onSearch(keyword);
+    setIsTyping(false);
+  };
 
   const handleOnSearch = React.useCallback(
     inputDebounce > 0
       ? debounce((keyword: string) => callOnSearch(keyword), inputDebounce)
       : (keyword: string) => callOnSearch(keyword),
-    [items]
-  )
+    [items],
+  );
 
   const handleOnClick = (result: Item<T>) => {
-    eraseResults()
-    onSelect(result)
-    setSearchString(result[resultStringKeyName])
-    setHighlightedItem(0)
-  }
+    eraseResults();
+    onSelect(result);
+    setSearchString(result[resultStringKeyName]);
+    setHighlightedItem(0);
+  };
 
   const fuseResults = (keyword: string) => {
-    const filterResult = fuse
-      .search(keyword)
-      .map((result) => ({ ...result.item }));
-    return keyword.length ? filterResult: defaultOptions;
-  }
+    // if (!fuse) {
+    //   return [];
+    // }
+    // const filterResult = fuse
+    //   .search(keyword)
+    //   .map((result) => ({ ...result.item }));
+    return keyword.length ? items : defaultOptions;
+  };
 
   const handleSetSearchString = ({ target }: ChangeEvent<HTMLInputElement>) => {
-    const keyword = target.value
-
-    setSearchString(keyword)
-    handleOnSearch(keyword)
-    setIsTyping(true)
+    const keyword = target.value;
+    setSearchString(keyword);
+    handleOnSearch(keyword);
+    setIsTyping(true);
 
     if (isSearchComplete) {
-      setIsSearchComplete(false)
+      setIsSearchComplete(false);
     }
-  }
+  };
 
   const eraseResults = () => {
-    setResults([])
-    setIsSearchComplete(true)
-  }
+    setResults([]);
+    setIsSearchComplete(true);
+  };
 
   const handleSetHighlightedItem = ({
     index,
-    event
+    event,
   }: {
-    index?: number
-    event?: KeyboardEvent<HTMLInputElement>
+    index?: number;
+    event?: KeyboardEvent<HTMLInputElement>;
   }) => {
-    let itemIndex = -1
+    let itemIndex = -1;
 
     const setValues = (index: number) => {
-      setHighlightedItem(index)
-      results?.[index] && onHover(results[index])
-    }
+      setHighlightedItem(index);
+      results?.[index] && onHover(results[index]);
+    };
 
     if (index !== undefined) {
-      setHighlightedItem(index)
-      results?.[index] && onHover(results[index])
+      setHighlightedItem(index);
+      results?.[index] && onHover(results[index]);
     } else if (event) {
       switch (event.key) {
         case 'Enter':
           if (results.length > 0 && results[highlightedItem]) {
-            event.preventDefault()
-            onSelect(results[highlightedItem])
-            setSearchString(results[highlightedItem][resultStringKeyName])
-            onSearch(results[highlightedItem][resultStringKeyName], results)
+            event.preventDefault();
+            onSelect(results[highlightedItem]);
+            setSearchString(results[highlightedItem][resultStringKeyName]);
+            onSearch(results[highlightedItem][resultStringKeyName], results);
           } else {
-            onSearch(searchString, results)
+            onSearch(searchString, results);
           }
-          setHighlightedItem(-1)
-          eraseResults()
-          break
+          setHighlightedItem(-1);
+          eraseResults();
+          break;
         case 'ArrowUp':
-          event.preventDefault()
-          itemIndex = highlightedItem > -1 ? highlightedItem - 1 : results.length - 1
-          setValues(itemIndex)
-          break
+          event.preventDefault();
+          itemIndex =
+            highlightedItem > -1 ? highlightedItem - 1 : results.length - 1;
+          setValues(itemIndex);
+          break;
         case 'ArrowDown':
-          event.preventDefault()
-          itemIndex = highlightedItem < results.length - 1 ? highlightedItem + 1 : -1
-          setValues(itemIndex)
-          break
+          event.preventDefault();
+          itemIndex =
+            highlightedItem < results.length - 1 ? highlightedItem + 1 : -1;
+          setValues(itemIndex);
+          break;
         default:
-          break
+          break;
       }
     }
-  }
+  };
   const [showResponse, setShowResponse] = useState(false);
 
   return (
@@ -229,7 +242,7 @@ export default function ReactSearchAutocomplete<T>({
               setShowResponse(true);
             }}
           />
-          {showResponse &&
+          {showResponse && (
             <Results
               results={results}
               onClick={handleOnClick}
@@ -243,17 +256,17 @@ export default function ReactSearchAutocomplete<T>({
               showNoResultsFlag={showNoResultsFlag}
               showNoResultsText={showNoResultsText}
             />
-          }
+          )}
         </div>
       </StyledReactSearchAutocomplete>
     </ThemeProvider>
-  )
+  );
 }
 
 const StyledReactSearchAutocomplete = styled.div`
   position: relative;
 
-  height: ${(props: any) => parseInt(props.theme.height) + 2 + 'px'};
+  height: ${(props: any) => `${parseInt(props.theme.height) + 2}px`};
 
   .wrapper {
     position: absolute;
@@ -282,4 +295,4 @@ const StyledReactSearchAutocomplete = styled.div`
       box-shadow: ${(props: any) => props.theme.boxShadow};
     }
   }
-`
+`;

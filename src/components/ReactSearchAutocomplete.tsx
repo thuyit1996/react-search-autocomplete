@@ -232,7 +232,13 @@ export default function ReactSearchAutocomplete<T>({
             }}
             autoFocus={autoFocus}
             onFocus={handleOnFocus}
-            onClear={onClear}
+            onClear={() => {
+              onClear();
+              if (defaultOptions.length) {
+                setResults(defaultOptions);
+                setShowResponse(true);
+              }
+            }}
             placeholder={placeholder}
             showIcon={showIcon}
             showClear={showClear}

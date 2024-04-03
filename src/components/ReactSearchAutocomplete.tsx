@@ -64,7 +64,7 @@ export default function ReactSearchAutocomplete<T>({
   showNoResultsText = 'No results',
   maxLength = 0,
   className,
-  defaultOptions = []
+  defaultOptions = [],
 }: ReactSearchAutocompleteProps<T>) {
   const theme = { ...defaultTheme, ...styling }
   const options = { ...defaultFuseOptions, ...fuseOptions }
@@ -108,7 +108,7 @@ export default function ReactSearchAutocomplete<T>({
   }, [isTyping, showNoResults, isSearchComplete, searchString, results])
 
   const handleOnFocus = (event: FocusEvent<HTMLInputElement>) => {
-    setResults([...defaultOptions,...items.slice(0, maxResults)])
+    setResults([...(searchString ? [] : defaultOptions), ...items.slice(0, maxResults)])
   }
 
   const callOnSearch = (keyword: string) => {
@@ -139,7 +139,7 @@ export default function ReactSearchAutocomplete<T>({
     const filterResult = fuse
       .search(keyword)
       .map((result) => ({ ...result.item }));
-    return defaultOptions.concat(filterResult);
+    return keyword.length ? filterResult: defaultOptions;
   }
 
   const handleSetSearchString = ({ target }: ChangeEvent<HTMLInputElement>) => {
@@ -205,6 +205,7 @@ export default function ReactSearchAutocomplete<T>({
       }
     }
   }
+  const [showResponse, setShowResponse] = useState(false);
 
   return (
     <ThemeProvider theme={theme}>
@@ -213,7 +214,9 @@ export default function ReactSearchAutocomplete<T>({
           <SearchInput
             searchString={searchString}
             setSearchString={handleSetSearchString}
-            eraseResults={eraseResults}
+            eraseResults={() => {
+              setShowResponse(false);
+            }}
             autoFocus={autoFocus}
             onFocus={handleOnFocus}
             onClear={onClear}
@@ -222,20 +225,25 @@ export default function ReactSearchAutocomplete<T>({
             showClear={showClear}
             setHighlightedItem={handleSetHighlightedItem}
             maxLength={maxLength}
+            onClickInput={() => {
+              setShowResponse(true);
+            }}
           />
-          <Results
-            results={results}
-            onClick={handleOnClick}
-            setSearchString={setSearchString}
-            showIcon={showIcon}
-            maxResults={maxResults}
-            resultStringKeyName={resultStringKeyName}
-            formatResult={formatResult}
-            highlightedItem={highlightedItem}
-            setHighlightedItem={handleSetHighlightedItem}
-            showNoResultsFlag={showNoResultsFlag}
-            showNoResultsText={showNoResultsText}
-          />
+          {showResponse &&
+            <Results
+              results={results}
+              onClick={handleOnClick}
+              setSearchString={setSearchString}
+              showIcon={showIcon}
+              maxResults={maxResults}
+              resultStringKeyName={resultStringKeyName}
+              formatResult={formatResult}
+              highlightedItem={highlightedItem}
+              setHighlightedItem={handleSetHighlightedItem}
+              showNoResultsFlag={showNoResultsFlag}
+              showNoResultsText={showNoResultsText}
+            />
+          }
         </div>
       </StyledReactSearchAutocomplete>
     </ThemeProvider>

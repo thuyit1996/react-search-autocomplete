@@ -1,4 +1,4 @@
-import { ChangeEventHandler, FocusEvent, FocusEventHandler, useRef } from 'react'
+import { ChangeEventHandler, FocusEvent, FocusEventHandler, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { ClearIcon } from './ClearIcon'
 import { SearchIcon } from './SearchIcon'
@@ -33,7 +33,7 @@ export default function SearchInput({
   onClickInput
 }: SearchInputProps) {
   const ref = useRef<HTMLInputElement>(null)
-
+  const [focus, setFocusManual] = useState(false);
   let manualFocus = true
 
   const setFocus = () => {
@@ -49,7 +49,7 @@ export default function SearchInput({
   const maxLengthProperty = maxLength ? { maxLength } : {}
 
   return (
-    <StyledSearchInput>
+    <StyledSearchInput className={`${focus ? 'focus-item' : ''}`}>
       <SearchIcon showIcon={showIcon} />
       <input
         type="text"
@@ -57,11 +57,14 @@ export default function SearchInput({
         spellCheck={false}
         value={searchString}
         onChange={setSearchString}
-        onFocus={handleOnFocus}
+        onFocus={(e) => {
+          handleOnFocus(e);
+          setFocusManual(true);
+        }}
         placeholder={placeholder}
         autoFocus={autoFocus}
         onClick={onClickInput}
-        onBlur={() => eraseResults()}
+        onBlur={() => {eraseResults(); setFocusManual(false)}}
         onKeyDown={(event) => setHighlightedItem({ event })}
         data-test="search-input"
         {...maxLengthProperty}

@@ -39,7 +39,7 @@ export default function Results<T>({
 
   const handleClick = (result: WithStringKeyName) => {
     onClick(result);
-    setSearchString(result[resultStringKeyName]);
+    setSearchString(result?.title ?? result[resultStringKeyName]);
   };
   const handleMouseDown = ({
     event,
@@ -95,7 +95,7 @@ export default function Results<T>({
 
 const ResultsWrapper = ({ children }: { children: ReactNode }) => {
   return (
-    <StyledResults>
+    <StyledResults className='result-wrapper'>
       <div className="line" />
       <ul className="result-list">{children}</ul>
     </StyledResults>

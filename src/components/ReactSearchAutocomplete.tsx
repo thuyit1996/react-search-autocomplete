@@ -1,12 +1,10 @@
-// @ts-nocheck
-import type { default as Fuse } from 'fuse.js';
 import { debounce } from 'lodash';
 import type { ChangeEvent, FocusEventHandler, KeyboardEvent } from 'react';
 import React, { useEffect, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 import type { DefaultTheme } from '../config/config';
-import { defaultFuseOptions, defaultTheme } from '../config/config';
+import { defaultTheme } from '../config/config';
 import type { Item } from './Results';
 import Results from './Results';
 import SearchInput from './SearchInput';
@@ -16,9 +14,8 @@ export const MAX_RESULTS = 10;
 
 export interface ReactSearchAutocompleteProps<T> {
   items: T[];
-  fuseOptions?: Fuse.IFuseOptions<T>;
   inputDebounce?: number;
-  onSearch?: (keyword: string, results: T[]) => void;
+  onSearch?: (keyword: string, results?: T[]) => void;
   onHover?: (result: T) => void;
   onSelect?: (result: T) => void;
   onFocus?: FocusEventHandler<HTMLInputElement>;
@@ -37,13 +34,14 @@ export interface ReactSearchAutocompleteProps<T> {
   maxLength?: number;
   className?: string;
   defaultOptions?: T[];
+  customValue?: string;
+  triggerSetValue?: boolean;
 }
 
 export default function ReactSearchAutocomplete<T>({
   items = [],
-  fuseOptions = defaultFuseOptions,
   inputDebounce = DEFAULT_INPUT_DEBOUNCE,
-  onSearch = () => {},
+  onSearch,
   onHover = () => {},
   onSelect = () => {},
   onFocus = () => {},
@@ -62,12 +60,10 @@ export default function ReactSearchAutocomplete<T>({
   maxLength = 0,
   className,
   defaultOptions = [],
+  customValue = '',
+  triggerSetValue,
 }: ReactSearchAutocompleteProps<T>) {
   const theme = { ...defaultTheme, ...styling };
-  // const options = { ...defaultFuseOptions, ...fuseOptions };
-
-  // const fuse = new Fuse(items, options);
-  // fuse.setCollection(items);
 
   const [searchString, setSearchString] = useState<string>(inputSearchString);
   const [results, setResults] = useState<any[]>([]);
@@ -75,11 +71,7 @@ export default function ReactSearchAutocomplete<T>({
   const [isSearchComplete, setIsSearchComplete] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [showNoResultsFlag, setShowNoResultsFlag] = useState<boolean>(false);
-
-  // useEffect(() => {
-
-  // }, [items]);
-
+  const [showResponse, setShowResponse] = useState(false);
   useEffect(() => {
     setSearchString(inputSearchString);
     const timeoutId = setTimeout(
@@ -89,17 +81,17 @@ export default function ReactSearchAutocomplete<T>({
 
     return () => clearTimeout(timeoutId);
   }, [inputSearchString]);
+  useEffect(() => {
+    if (triggerSetValue) {
+      console.log(triggerSetValue, customValue);
+      setSearchString(customValue);
+    }
+  }, [customValue, triggerSetValue]);
 
   useEffect(() => {
-    // const newFuse = new Fuse(items, options);
-    // newFuse.setCollection(items);
-    // setFuse(newFuse);
-    // searchString?.length > 0 &&
-    //   results &&
-    //   results?.length > 0 &&
     setResults(fuseResults(searchString));
+    searchString && fuseResults(searchString).length && setShowResponse(true);
   }, [items]);
-
   useEffect(() => {
     if (
       showNoResults &&
@@ -114,7 +106,7 @@ export default function ReactSearchAutocomplete<T>({
     }
   }, [isTyping, showNoResults, isSearchComplete, searchString, results]);
 
-  const handleOnFocus = (event: FocusEvent<HTMLInputElement>) => {
+  const handleOnFocus = () => {
     setResults([
       ...(searchString ? [] : defaultOptions),
       ...items.slice(0, maxResults),
@@ -122,11 +114,7 @@ export default function ReactSearchAutocomplete<T>({
   };
 
   const callOnSearch = (keyword: string) => {
-    // let newResults: T[] = [];
-
-    // keyword?.length > 0 && (newResults = fuseResults(keyword));
-    // setResults(newResults);
-    onSearch(keyword);
+    onSearch?.(keyword);
     setIsTyping(false);
   };
 
@@ -145,12 +133,6 @@ export default function ReactSearchAutocomplete<T>({
   };
 
   const fuseResults = (keyword: string) => {
-    // if (!fuse) {
-    //   return [];
-    // }
-    // const filterResult = fuse
-    //   .search(keyword)
-    //   .map((result) => ({ ...result.item }));
     return keyword.length ? items : defaultOptions;
   };
 
@@ -193,10 +175,13 @@ export default function ReactSearchAutocomplete<T>({
           if (results.length > 0 && results[highlightedItem]) {
             event.preventDefault();
             onSelect(results[highlightedItem]);
-            setSearchString(results[highlightedItem][resultStringKeyName]);
-            onSearch(results[highlightedItem][resultStringKeyName], results);
+            const value =
+              results[highlightedItem]?.title ??
+              results[highlightedItem][resultStringKeyName];
+            setSearchString(value);
+            onSearch?.(results[highlightedItem][resultStringKeyName], results);
           } else {
-            onSearch(searchString, results);
+            onSearch?.(searchString, results);
           }
           setHighlightedItem(-1);
           eraseResults();
@@ -218,7 +203,6 @@ export default function ReactSearchAutocomplete<T>({
       }
     }
   };
-  const [showResponse, setShowResponse] = useState(false);
 
   return (
     <ThemeProvider theme={theme}>

@@ -1,3 +1,3 @@
 import ReactSearchAutocomplete from './components/ReactSearchAutocomplete.js'
-
-export { ReactSearchAutocomplete }
+import StaticAutocomplete from './components/StaticAutocomplete.js';
+export { ReactSearchAutocomplete, StaticAutocomplete }

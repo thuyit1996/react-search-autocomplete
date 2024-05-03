@@ -1,6 +1,5 @@
 
 //@ts-nocheck
-import { debounce } from 'lodash';
 import type { ChangeEvent, FocusEventHandler, KeyboardEvent } from 'react';
 import React, { useEffect, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
@@ -10,8 +9,9 @@ import { defaultTheme } from '../config/config';
 import type { Item } from './Results';
 import Results from './Results';
 import SearchInput from './SearchInput';
+import { debounce } from '../utils/utils';
 
-export const DEFAULT_INPUT_DEBOUNCE = 200;
+export const DEFAULT_INPUT_DEBOUNCE = 300;
 export const MAX_RESULTS = 10;
 
 export interface ReactSearchAutocompleteProps<T> {

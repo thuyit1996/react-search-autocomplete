@@ -1,4 +1,3 @@
-import { debounce } from 'lodash';
 import type { ChangeEvent, FocusEventHandler, KeyboardEvent } from 'react';
 import React, { useEffect, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
@@ -8,8 +7,9 @@ import { defaultTheme } from '../config/config';
 import type { Item } from './Results';
 import Results from './Results';
 import SearchInput from './SearchInput';
+import { debounce } from '../utils/utils';
 
-export const DEFAULT_INPUT_DEBOUNCE = 200;
+export const DEFAULT_INPUT_DEBOUNCE = 300;
 export const MAX_RESULTS = 10;
 
 export interface ReactSearchAutocompleteProps<T> {
@@ -36,6 +36,7 @@ export interface ReactSearchAutocompleteProps<T> {
   defaultOptions?: T[];
   customValue?: string;
   triggerSetValue?: boolean;
+  onBlurHandler?: () => void;
 }
 
 export default function ReactSearchAutocomplete<T>({
@@ -62,6 +63,7 @@ export default function ReactSearchAutocomplete<T>({
   defaultOptions = [],
   customValue = '',
   triggerSetValue,
+  onBlurHandler,
 }: ReactSearchAutocompleteProps<T>) {
   const theme = { ...defaultTheme, ...styling };
 
@@ -228,6 +230,7 @@ export default function ReactSearchAutocomplete<T>({
             showClear={showClear}
             setHighlightedItem={handleSetHighlightedItem}
             maxLength={maxLength}
+            onBlurHandler={() => onBlurHandler?.()}
             onClickInput={() => {
               setShowResponse(true);
             }}

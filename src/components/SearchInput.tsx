@@ -16,6 +16,7 @@ interface SearchInputProps {
   showClear: boolean
   maxLength: number,
   onClickInput?: () => void;
+  onBlurHandler?: () => void;
 }
 
 export default function SearchInput({
@@ -30,7 +31,8 @@ export default function SearchInput({
   showIcon = true,
   showClear = true,
   maxLength,
-  onClickInput
+  onClickInput,
+  onBlurHandler,
 }: SearchInputProps) {
   const ref = useRef<HTMLInputElement>(null)
   const [focus, setFocusManual] = useState(false);
@@ -64,7 +66,11 @@ export default function SearchInput({
         placeholder={placeholder}
         autoFocus={autoFocus}
         onClick={onClickInput}
-        onBlur={() => {eraseResults(); setFocusManual(false)}}
+        onBlur={() => {
+          eraseResults(); setFocusManual(false)
+          onBlurHandler?.();
+          }
+        }
         onKeyDown={(event) => setHighlightedItem({ event })}
         data-test="search-input"
         {...maxLengthProperty}
